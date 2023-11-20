@@ -1,0 +1,60 @@
+File Azerbaijan
+Units Degrees
+
+MultiPolygon
+Name: "AZE"
+Polygon
+Ring
+Point X: 45.001987, Y: 39.740004 End Point
+Point X: 45.298145, Y: 39.471751 End Point
+Point X: 45.739978, Y: 39.473999 End Point
+Point X: 45.735379, Y: 39.319719 End Point
+Point X: 46.143623, Y: 38.741201 End Point
+Point X: 45.457722, Y: 38.874139 End Point
+Point X: 44.952688, Y: 39.335765 End Point
+Point X: 44.79399, Y: 39.713003 End Point
+Point X: 45.001987, Y: 39.740004 End Point
+End Ring
+End Polygon
+Polygon
+Ring
+Point X: 47.373315, Y: 41.219732 End Point
+Point X: 47.815666, Y: 41.151416 End Point
+Point X: 47.987283, Y: 41.405819 End Point
+Point X: 48.584353, Y: 41.80887 End Point
+Point X: 49.110264, Y: 41.282287 End Point
+Point X: 49.618915, Y: 40.572924 End Point
+Point X: 50.08483, Y: 40.526157 End Point
+Point X: 50.392821, Y: 40.256561 End Point
+Point X: 49.569202, Y: 40.176101 End Point
+Point X: 49.395259, Y: 39.399482 End Point
+Point X: 49.223228, Y: 39.049219 End Point
+Point X: 48.856532, Y: 38.815486 End Point
+Point X: 48.883249, Y: 38.320245 End Point
+Point X: 48.634375, Y: 38.270378 End Point
+Point X: 48.010744, Y: 38.794015 End Point
+Point X: 48.355529, Y: 39.288765 End Point
+Point X: 48.060095, Y: 39.582235 End Point
+Point X: 47.685079, Y: 39.508364 End Point
+Point X: 46.50572, Y: 38.770605 End Point
+Point X: 46.483499, Y: 39.464155 End Point
+Point X: 46.034534, Y: 39.628021 End Point
+Point X: 45.610012, Y: 39.899994 End Point
+Point X: 45.891907, Y: 40.218476 End Point
+Point X: 45.359175, Y: 40.561504 End Point
+Point X: 45.560351, Y: 40.81229 End Point
+Point X: 45.179496, Y: 40.985354 End Point
+Point X: 44.97248, Y: 41.248129 End Point
+Point X: 45.217426, Y: 41.411452 End Point
+Point X: 45.962601, Y: 41.123873 End Point
+Point X: 46.501637, Y: 41.064445 End Point
+Point X: 46.637908, Y: 41.181673 End Point
+Point X: 46.145432, Y: 41.722802 End Point
+Point X: 46.404951, Y: 41.860675 End Point
+Point X: 46.686071, Y: 41.827137 End Point
+Point X: 47.373315, Y: 41.219732 End Point
+End Ring
+End Polygon
+	name: "Azerbaijan"
+End MultiPolygon
+
