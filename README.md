@@ -1,0 +1,2 @@
+# MiniMap
+Mini map control
