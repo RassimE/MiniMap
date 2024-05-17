@@ -75,5 +75,10 @@ namespace MiniMap.Geometry
 			get { return _LineStrings[i]; }
 			set { _LineStrings[i] = value; }
 		}
+
+				public Point PointOnLine(double atBegin)
+		{
+			return _LineStrings[0].PointOnLine(atBegin);
+		}
 	}
 }

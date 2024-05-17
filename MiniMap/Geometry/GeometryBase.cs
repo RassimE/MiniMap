@@ -20,6 +20,7 @@ namespace MiniMap.Geometry
 	public abstract class GeometryBase
 	{
 		protected GeometryType _type;
+		public object Tag;
 
 		public GeometryType Type => _type;
 		public string Name { get; set; }

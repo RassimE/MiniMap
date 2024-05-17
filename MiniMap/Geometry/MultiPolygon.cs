@@ -59,5 +59,19 @@ namespace MiniMap.Geometry
 			get { return _polygons[i]; }
 			set { _polygons[i] = value; }
 		}
+
+		public Point GetCenter()
+		{
+			double xSum = 0.0, ySum = 0.0;
+			foreach (Polygon pg in _polygons)
+			{
+				//Point pt = pg.CenterOfMass();
+				Point pt = pg.GetCenter();
+				xSum += pt.X;
+				ySum += pt.Y;
+			}
+
+			return new Point(xSum/ _polygons.Count, ySum / _polygons.Count);
+		}
 	}
 }

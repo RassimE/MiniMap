@@ -130,7 +130,7 @@ namespace TestApp
 
 			try
 			{
-				string ext = Path.GetExtension(saveMapData.FileName).ToLower();
+				string ext = Path.GetExtension(saveAsBitmap.FileName).ToLower();
 				switch (ext)
 				{
 					case ".gif":
