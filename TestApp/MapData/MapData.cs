@@ -23,6 +23,8 @@ namespace DataFrame
 
 		public string Name { get; set; }
 
+		public Envelope Extend { get { return _extend; } }
+
 		public MapUnits Units
 		{
 			get { return _units; }
@@ -65,6 +67,7 @@ namespace DataFrame
 		public GeometryBase this[int i]
 		{
 			get { return _geometries[i]; }
+			set { _geometries[i] = value; }
 		}
 
 		public IEnumerator GetEnumerator()
@@ -94,15 +97,24 @@ namespace DataFrame
 			return result;
 		}
 
-		public void AddGeometry(GeometryBase geometry)
+		public int AddGeometry(GeometryBase geometry)
 		{
+			int result = _geometries.Count;
 			_geometries.Add(geometry);
 			_extend.ExpandToInclude(geometry);
+			return result;
 		}
 
-		public void RemoveGeometry(GeometryBase geometry)
+		public bool RemoveGeometry(GeometryBase geometry)
 		{
-			_geometries.Remove(geometry);
+			return _geometries.Remove(geometry);
+		}
+		
+		public void RemoveGeometry(int geometry)
+		{
+			if (geometry < 0 || geometry >= _geometries.Count)
+				return;
+			_geometries.RemoveAt(geometry);
 		}
 		
 		public void CalckExtent()

@@ -350,16 +350,33 @@ namespace DataFrame
 			writer.Write(" ]");
 		}
 
-		static void SaveMultiPointCoordinates(StreamWriter writer, MultiPoint mlpt, int tabs = 4)
+		static void SaveMultiPointCoordinates(StreamWriter writer, MultiPoint mlpt, int tabs = 4, bool isRing = false)
 		{
+			const double eps = 1E-7;
+
+			int n = mlpt.Count;
+			bool saveClosingPoint = false;
+			if (isRing && n > 0)
+			{
+				double dx = mlpt[0].X - mlpt[n - 1].X;
+				double dy = mlpt[0].Y - mlpt[n - 1].Y;
+				saveClosingPoint = dx + dy > eps;
+			}
+
 			string indent = new string('\t', tabs);
 			writer.WriteLine("[");
-			int n = mlpt.Count;
 			for (int i = 0; i < n; i++)
 			{
 				writer.Write(indent + "\t");
 				SavePointCoordinates(writer, mlpt[i]);
-				writer.WriteLine(i < n - 1 ? "," : "");
+				writer.WriteLine(i < n - 1 || saveClosingPoint ? "," : "");
+			}
+
+			if (saveClosingPoint)
+			{
+				writer.Write(indent + "\t");
+				SavePointCoordinates(writer, mlpt[0]);
+				writer.WriteLine();
 			}
 
 			writer.Write(indent + "]");
@@ -374,7 +391,7 @@ namespace DataFrame
 			writer.WriteLine("[");
 			writer.Write(indent + "\t");
 
-			SaveMultiPointCoordinates(writer, polygon.ExteriorRing, 5 + tabs);
+			SaveMultiPointCoordinates(writer, polygon.ExteriorRing, 5 + tabs, true);
 			int n = polygon.InteriorRingList.Count;
 
 			if (n > 0)
@@ -384,7 +401,7 @@ namespace DataFrame
 
 				for (int i = 0; i < n; i++)
 				{
-					SaveMultiPointCoordinates(writer, polygon.InteriorRingList[i], 5 + tabs);
+					SaveMultiPointCoordinates(writer, polygon.InteriorRingList[i], 5 + tabs, true);
 					writer.WriteLine(i < n - 1 ? "," : "");
 				}
 				writer.Write(indent + "]");
@@ -447,7 +464,7 @@ namespace DataFrame
 				case GeometryType.MultiPoint:
 				case GeometryType.LineString:
 				case GeometryType.Ring:
-					SaveMultiPointCoordinates(writer, (MultiPoint)geometry);
+					SaveMultiPointCoordinates(writer, (MultiPoint)geometry, isRing: geometry.Type == GeometryType.Ring);
 					writer.WriteLine();
 					break;
 

@@ -7,6 +7,13 @@ using System.Windows.Forms;
 
 namespace MiniMap
 {
+	public struct Style
+	{
+		public int Color;
+		public int Size;
+		public int Param;
+	}
+
 	public class MapEngine	//View
 	{
 		/// <summary>
@@ -20,10 +27,10 @@ namespace MiniMap
 			public GeometryType type;
 			public Geometry.Point textPosition;
 			public float textDirection;
-			public int color;
-			public int size;
 			public bool drawVerts;
 			public string text;
+
+			public Style style;
 		}
 
 		#region variables
@@ -105,7 +112,16 @@ namespace MiniMap
 		#region draw
 		public int DrawPoint(Geometry.Point pt, int Size = 8, int iColor = -1)
 		{
-			DrawingParams draw = new DrawingParams { geometry = pt, textPosition = pt, type = GeometryType.Point, color = iColor, size = Size, drawVerts = false, text = null };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pt,
+				textPosition = pt,
+				type = GeometryType.Point,
+				drawVerts = false,
+				text = null,
+				style = new Style { Color = iColor, Size = Size }
+			};
+
 			DrawPoint(draw);
 
 			if (!_drawingVertex)
@@ -116,7 +132,16 @@ namespace MiniMap
 
 		public int DrawPointWithText(Geometry.Point pt, string text, int Size = 10, int iColor = -1)
 		{
-			DrawingParams draw = new DrawingParams { geometry = pt, textPosition = pt, type = GeometryType.Point, color = iColor, size = Size, drawVerts = false, text = text };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pt,
+				textPosition = pt,
+				type = GeometryType.Point,
+				drawVerts = false,
+				text = text,
+				style = new Style { Color = iColor, Size = Size }
+			};
+
 			DrawPoint(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -129,31 +154,31 @@ namespace MiniMap
 			if (_gr == null)
 				_gr = Graphics.FromImage(_bmp);
 
-			if (draw.color < 0)
+			if (draw.style.Color < 0)
 			{
 				Random random = new Random();
 				brush = new SolidBrush(Color.FromArgb(random.Next(0x100), random.Next(0x100), random.Next(0x100)));
 			}
 			else
-				brush = new SolidBrush(Color.FromArgb(draw.color & 0xff, (draw.color >> 8) & 0xff, (draw.color >> 0x10) & 0xff));
+				brush = new SolidBrush(Color.FromArgb(draw.style.Color & 0xff, (draw.style.Color >> 8) & 0xff, (draw.style.Color >> 0x10) & 0xff));
 
 			Geometry.Point pt = (Geometry.Point)draw.geometry;
 			_fullExtend.ExpandToInclude(pt);
 
 			PointF point = ProjectToScr(pt);
-			if (point.X < draw.size || point.Y < draw.size)
+			if (point.X < draw.style.Size || point.Y < draw.style.Size)
 				return;
 
-			if (point.X + draw.size > _bmp.Width || point.Y + draw.size > _bmp.Height)
+			if (point.X + draw.style.Size > _bmp.Width || point.Y + draw.style.Size > _bmp.Height)
 				return;
 
-			_gr.FillEllipse(brush, point.X - (0.5f * draw.size), point.Y - (0.5f * draw.size), (float)draw.size, (float)draw.size);
+			_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), (float)draw.style.Size, (float)draw.style.Size);
 
 			if (!string.IsNullOrEmpty(draw.text))
 			{
-				Font font = new Font("Arial", (float)(draw.size + 2));
-				point.X += 0.5f * draw.size;
-				point.Y -= 0.5f * draw.size;
+				Font font = new Font("Arial", (float)(draw.style.Size + 2));
+				point.X += 0.5f * draw.style.Size;
+				point.Y -= 0.5f * draw.style.Size;
 				_gr.DrawString(draw.text, font, Brushes.Black, point);
 			}
 		}
@@ -168,7 +193,16 @@ namespace MiniMap
 			}
 			Geometry.Point textPos = new Geometry.Point(x, y);
 
-			DrawingParams draw = new DrawingParams { geometry = mpt, textPosition = textPos, type = GeometryType.MultiPoint, color = iColor, size = Size, drawVerts = false, text = null };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = mpt,
+				textPosition = textPos,
+				type = GeometryType.MultiPoint,
+				drawVerts = false,
+				text = null,
+				style = new Style { Color = iColor, Size = Size }
+			};
+
 			DrawMultiPoint(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -181,13 +215,13 @@ namespace MiniMap
 			if (_gr == null)
 				_gr = Graphics.FromImage(_bmp);
 
-			if (draw.color < 0)
+			if (draw.style.Color < 0)
 			{
 				Random random = new Random();
 				brush = new SolidBrush(Color.FromArgb(random.Next(0x100), random.Next(0x100), random.Next(0x100)));
 			}
 			else
-				brush = new SolidBrush(Color.FromArgb(draw.color & 0xff, (draw.color >> 8) & 0xff, (draw.color >> 0x10) & 0xff));
+				brush = new SolidBrush(Color.FromArgb(draw.style.Color & 0xff, (draw.style.Color >> 8) & 0xff, (draw.style.Color >> 0x10) & 0xff));
 
 			MultiPoint mpt = (MultiPoint)draw.geometry;
 
@@ -196,13 +230,13 @@ namespace MiniMap
 				_fullExtend.ExpandToInclude(pt);
 
 				PointF point = ProjectToScr(pt);
-				if (point.X < draw.size || point.Y < draw.size)
+				if (point.X < draw.style.Size || point.Y < draw.style.Size)
 					continue;
 
-				if (point.X + draw.size > _bmp.Width || point.Y + draw.size > _bmp.Height)
+				if (point.X + draw.style.Size > _bmp.Width || point.Y + draw.style.Size > _bmp.Height)
 					continue;
 
-				_gr.FillEllipse(brush, point.X - (0.5f * draw.size), point.Y - (0.5f * draw.size), (float)draw.size, (float)draw.size);
+				_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), (float)draw.style.Size, (float)draw.style.Size);
 			}
 		}
 
@@ -233,7 +267,20 @@ namespace MiniMap
 				ltp -= lc;
 			}
 
-			DrawingParams draw = new DrawingParams { geometry = lineStr, textPosition = textPos, textDirection = dir, type = GeometryType.LineString, color = color, size = width, drawVerts = markVerts, text = lineStr.Name };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = lineStr,
+				textPosition = textPos,
+				textDirection = dir,
+				type = GeometryType.LineString,
+				drawVerts = markVerts,
+				text = lineStr.Name,
+				style = new Style
+				{
+					Color = color,
+					Size = width
+				}
+			};
 			DrawLineString(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -247,13 +294,13 @@ namespace MiniMap
 
 			Pen pen;
 
-			if (draw.color < 0)
+			if (draw.style.Color < 0)
 			{
 				Random random = new Random();
-				pen = new Pen(Color.FromArgb(random.Next(0x100), random.Next(0x100), random.Next(0x100)), draw.size);
+				pen = new Pen(Color.FromArgb(random.Next(0x100), random.Next(0x100), random.Next(0x100)), draw.style.Size);
 			}
 			else
-				pen = new Pen(Color.FromArgb(draw.color & 0xff, (draw.color >> 8) & 0xff, (draw.color >> 0x10) & 0xff), draw.size);
+				pen = new Pen(Color.FromArgb(draw.style.Color & 0xff, (draw.style.Color >> 8) & 0xff, (draw.style.Color >> 0x10) & 0xff), draw.style.Size);
 
 			LineString lineStr = (LineString)draw.geometry;
 
@@ -308,7 +355,15 @@ namespace MiniMap
 
 		public int DrawMultiLineString(MultiLineString polyline, int width = 1, int color = -1, bool markVerts = false)
 		{
-			DrawingParams draw = new DrawingParams { geometry = polyline, type = GeometryType.MultiLineString, color = color, size = width, drawVerts = markVerts, text = null };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = polyline,
+				type = GeometryType.MultiLineString,
+				drawVerts = markVerts,
+				text = null,
+				style = new Style { Color = color, Size = width }
+			};
+
 			DrawMultiLineString(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -317,7 +372,12 @@ namespace MiniMap
 
 		private void DrawMultiLineString(DrawingParams draw)
 		{
-			DrawingParams draw1 = new DrawingParams { color = draw.color, size = draw.size, drawVerts = draw.drawVerts, text = null };
+			DrawingParams draw1 = new DrawingParams
+			{
+				style = draw.style,
+				drawVerts = draw.drawVerts,
+				text = null
+			};
 
 			foreach (LineString str in (MultiLineString)draw.geometry)
 			{
@@ -328,7 +388,14 @@ namespace MiniMap
 
 		public int DrawPolygon(Polygon pgon, int color = -1, bool markVerts = false)
 		{
-			DrawingParams draw = new DrawingParams { geometry = pgon, type = GeometryType.Polygon, color = color, size = 0, drawVerts = markVerts, text = null };
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pgon,
+				type = GeometryType.Polygon,
+				drawVerts = markVerts,
+				text = null,
+				style = new Style { Color = color, Size = 0 }
+			};
 			DrawPolygon(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -340,8 +407,12 @@ namespace MiniMap
 			if (_gr == null)
 				_gr = Graphics.FromImage(_bmp);
 
-			Brush brush = new HatchBrush(HatchStyle.Percent80, Color.White);
-			Pen pen = new Pen(Color.Peru, 2f);
+			//Brush brush = new HatchBrush(HatchStyle.Percent80, Color.White);
+			//Pen pen = new Pen(Color.Peru, 2f);
+
+			Brush brush = new HatchBrush((HatchStyle)draw.style.Param, Color.FromArgb(draw.style.Color | (255 << 24)), Color.White);
+			Pen pen = new Pen(Color.FromArgb(draw.style.Color | (255 << 24)), 2f);
+			
 			GraphicsPath path = new GraphicsPath();
 			Polygon pgon = (Polygon)draw.geometry;
 
@@ -394,7 +465,7 @@ namespace MiniMap
 
 		public int DrawMultiPolygon(MultiPolygon mpgon, int color = -1, bool markVerts = false)
 		{
-			DrawingParams draw = new DrawingParams { geometry = mpgon, type = GeometryType.MultiPolygon, color = color, size = 0, drawVerts = markVerts, text = null };
+			DrawingParams draw = new DrawingParams { geometry = mpgon, type = GeometryType.MultiPolygon, style= new Style { Color = color, Size = 0 }, drawVerts = markVerts, text = null };
 			DrawMultiPolygon(draw);
 
 			_drawedItems.Add(_drawedCount, draw);
@@ -403,7 +474,7 @@ namespace MiniMap
 
 		private void DrawMultiPolygon(DrawingParams draw)
 		{
-			DrawingParams draw1 = new DrawingParams { color = -1, size = 0, drawVerts = draw.drawVerts, text = null };
+			DrawingParams draw1 = new DrawingParams { style = draw.style, drawVerts = draw.drawVerts, text = null };
 
 			foreach (Polygon pgon in (MultiPolygon)draw.geometry)
 			{
@@ -468,7 +539,7 @@ namespace MiniMap
 				lineStr.Add(LocalToPrj(ptCenter, lineDir, xLo + step * i, yLo));
 				lineStr.Add(LocalToPrj(ptCenter, lineDir, xLo + step * i, yHi));
 
-				DrawingParams draw = new DrawingParams { geometry = lineStr, textPosition = null, textDirection = 0, type = GeometryType.LineString, color = iColor, size = 1, drawVerts = false, text = lineStr.Name };
+				DrawingParams draw = new DrawingParams { geometry = lineStr, textPosition = null, textDirection = 0, type = GeometryType.LineString, style = new Style { Color = iColor, Size = 1 }, drawVerts = false, text = lineStr.Name };
 				DrawLineString(draw, true);
 			}
 
@@ -480,7 +551,7 @@ namespace MiniMap
 				lineStr.Add(LocalToPrj(ptCenter, lineDir, xLo, yLo + j * step));
 				lineStr.Add(LocalToPrj(ptCenter, lineDir, xHi, yLo + j * step));
 
-				DrawingParams draw = new DrawingParams { geometry = lineStr, textPosition = null, textDirection = 0, type = GeometryType.LineString, color = iColor, size = 1, drawVerts = false, text = lineStr.Name };
+				DrawingParams draw = new DrawingParams { geometry = lineStr, textPosition = null, textDirection = 0, type = GeometryType.LineString, style = new Style { Color = iColor, Size = 1 }, drawVerts = false, text = lineStr.Name };
 				DrawLineString(draw, true);
 			}
 		}
