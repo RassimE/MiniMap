@@ -1,137 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D87E48E-A92C-4584-9164-75EB6EFC1922}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MiniMap</RootNamespace>
-    <AssemblyName>MiniMap</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;haveProperties</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Controls\MapStatusStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\MapStatusStrip.Designer.cs">
-      <DependentUpon>MapStatusStrip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Geometry\Envelope.cs" />
-    <Compile Include="Geometry\GeometryBase.cs" />
-    <Compile Include="Geometry\GeometryType.cs" />
-    <Compile Include="Geometry\LineString.cs" />
-    <Compile Include="Geometry\MultiLineString.cs" />
-    <Compile Include="Geometry\MultiPoint.cs" />
-    <Compile Include="Geometry\MultiPolygon.cs" />
-    <Compile Include="Geometry\Point.cs" />
-    <Compile Include="Geometry\Polygon.cs" />
-    <Compile Include="Geometry\Ring.cs" />
-    <Compile Include="Controls\MapControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\MapControl.Designer.cs">
-      <DependentUpon>MapControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MapEngine.cs" />
-    <Compile Include="Controls\MapToolStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\MapToolStrip.Designer.cs">
-      <DependentUpon>MapToolStrip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="XorDrawing.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Controls\MapControl.resx">
-      <DependentUpon>MapControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MapStatusStrip.resx">
-      <DependentUpon>MapStatusStrip.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MapToolStrip.resx">
-      <DependentUpon>MapToolStrip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Edit.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\HandFlat.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomIn.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomOut.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bmpHandFlat.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bmpMeasure.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bmpNone.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bmpZoomIn.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bmpZoomOut.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Globe.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\left.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\right.gif" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DefineConstants>TRACE;DEBUG;haveProperties</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Update="Controls\MapStatusStrip.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Update="Controls\MapControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="Controls\MapToolStrip.cs">
+			<SubType>Component</SubType>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+	</ItemGroup>
 </Project>

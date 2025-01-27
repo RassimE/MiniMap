@@ -7,7 +7,7 @@ using MiniMap.Geometry;
 
 namespace DataFrame
 {
-	public static class GeoTxtSerializer
+    public static class GeoTxtSerializer
 	{
 		//Reader ====================================================================================
 		#region Reader
@@ -175,7 +175,7 @@ namespace DataFrame
 			if (!File.Exists(FileName))
 				throw new Exception("File not found!");
 
-			mapData.Clear();
+			//mapData.Clear();
 			mapData.ClearViewExtendStack();
 
 			mapData.Name = "";
