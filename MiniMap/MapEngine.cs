@@ -11,7 +11,7 @@ namespace MiniMap
 	{
 		public int Color;
 		public int Size;
-		public int Param;
+		public int Kind;
 	}
 
 	public class MapEngine	//View
@@ -110,6 +110,7 @@ namespace MiniMap
 		#endregion
 
 		#region draw
+
 		public int DrawPoint(Geometry.Point pt, int Size = 8, int iColor = -1)
 		{
 			DrawingParams draw = new DrawingParams
@@ -119,7 +120,27 @@ namespace MiniMap
 				type = GeometryType.Point,
 				drawVerts = false,
 				text = null,
-				style = new Style { Color = iColor, Size = Size }
+				style = new Style { Color = iColor, Size = Size, Kind = 0 }
+			};
+
+			DrawPoint(draw);
+
+			if (!_drawingVertex)
+				_drawedItems.Add(_drawedCount++, draw);
+
+			return _drawedCount;
+		}
+
+		public int DrawPoint(Geometry.Point pt, Style style)
+		{
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pt,
+				textPosition = pt,
+				type = GeometryType.Point,
+				drawVerts = false,
+				text = null,
+				style = style
 			};
 
 			DrawPoint(draw);
@@ -140,6 +161,24 @@ namespace MiniMap
 				drawVerts = false,
 				text = text,
 				style = new Style { Color = iColor, Size = Size }
+			};
+
+			DrawPoint(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
+		public int DrawPointWithText(Geometry.Point pt, string text, Style style)
+		{
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pt,
+				textPosition = pt,
+				type = GeometryType.Point,
+				drawVerts = false,
+				text = text,
+				style = style
 			};
 
 			DrawPoint(draw);
@@ -172,11 +211,11 @@ namespace MiniMap
 			if (point.X + draw.style.Size > _bmp.Width || point.Y + draw.style.Size > _bmp.Height)
 				return;
 
-			_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), (float)draw.style.Size, (float)draw.style.Size);
+			_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), draw.style.Size, draw.style.Size);
 
 			if (!string.IsNullOrEmpty(draw.text))
 			{
-				Font font = new Font("Arial", (float)(draw.style.Size + 2));
+				Font font = new Font("Arial", draw.style.Size + 2f);
 				point.X += 0.5f * draw.style.Size;
 				point.Y -= 0.5f * draw.style.Size;
 				_gr.DrawString(draw.text, font, Brushes.Black, point);
@@ -201,6 +240,32 @@ namespace MiniMap
 				drawVerts = false,
 				text = null,
 				style = new Style { Color = iColor, Size = Size }
+			};
+
+			DrawMultiPoint(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
+		public int DrawMultiPoint(MultiPoint mpt, Style style)
+		{
+			double x = 0, y = 0;
+			foreach (var pt in mpt)
+			{
+				x += pt.X;
+				y += pt.Y;
+			}
+			Geometry.Point textPos = new Geometry.Point(x, y);
+
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = mpt,
+				textPosition = textPos,
+				type = GeometryType.MultiPoint,
+				drawVerts = false,
+				text = null,
+				style = style
 			};
 
 			DrawMultiPoint(draw);
@@ -236,7 +301,7 @@ namespace MiniMap
 				if (point.X + draw.style.Size > _bmp.Width || point.Y + draw.style.Size > _bmp.Height)
 					continue;
 
-				_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), (float)draw.style.Size, (float)draw.style.Size);
+				_gr.FillEllipse(brush, point.X - (0.5f * draw.style.Size), point.Y - (0.5f * draw.style.Size), draw.style.Size, draw.style.Size);
 			}
 		}
 
@@ -287,6 +352,49 @@ namespace MiniMap
 			return _drawedCount++;
 		}
 
+		public int DrawLineString(LineString lineStr, Style style, bool markVerts = false)
+		{
+			double ltp = 0.5 * lineStr.Length;
+
+			Geometry.Point textPos = new Geometry.Point();
+			float dir = 0;
+			Geometry.Point pt0 = lineStr[0], pt1;
+
+			for (int i = 1; i < lineStr.Count; i++)
+			{
+				pt1 = lineStr[i];
+				double dx = pt1.X - pt0.X;
+				double dy = pt1.Y - pt0.Y;
+				double lc = Math.Sqrt(dx * dx + dy * dy);
+				if (lc > ltp)
+				{
+					double k = ltp / lc;
+					textPos.X = pt0.X + k * dx;
+					textPos.Y = pt0.Y + k * dy;
+
+					dir = RadToDeg((float)Math.Atan2(-dy, dx));
+					break;
+				}
+				pt0 = pt1;
+				ltp -= lc;
+			}
+
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = lineStr,
+				textPosition = textPos,
+				textDirection = dir,
+				type = GeometryType.LineString,
+				drawVerts = markVerts,
+				text = lineStr.Name,
+				style = style
+			};
+			DrawLineString(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
 		private void DrawLineString(DrawingParams draw, bool isGridPart = false)
 		{
 			if (_gr == null)
@@ -301,6 +409,9 @@ namespace MiniMap
 			}
 			else
 				pen = new Pen(Color.FromArgb(draw.style.Color & 0xff, (draw.style.Color >> 8) & 0xff, (draw.style.Color >> 0x10) & 0xff), draw.style.Size);
+
+			pen.DashStyle = (DashStyle)draw.style.Kind;
+			pen.Width = draw.style.Size;
 
 			LineString lineStr = (LineString)draw.geometry;
 
@@ -370,6 +481,23 @@ namespace MiniMap
 			return _drawedCount++;
 		}
 
+		public int DrawMultiLineString(MultiLineString polyline, Style style, bool markVerts = false)
+		{
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = polyline,
+				type = GeometryType.MultiLineString,
+				drawVerts = markVerts,
+				text = null,
+				style = style
+			};
+
+			DrawMultiLineString(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
 		private void DrawMultiLineString(DrawingParams draw)
 		{
 			DrawingParams draw1 = new DrawingParams
@@ -402,6 +530,22 @@ namespace MiniMap
 			return _drawedCount++;
 		}
 
+		public int DrawPolygon(Polygon pgon, Style style, bool markVerts = false)
+		{
+			DrawingParams draw = new DrawingParams
+			{
+				geometry = pgon,
+				type = GeometryType.Polygon,
+				drawVerts = markVerts,
+				text = null,
+				style = style
+			};
+			DrawPolygon(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
 		private void DrawPolygon(DrawingParams draw)
 		{
 			if (_gr == null)
@@ -410,9 +554,10 @@ namespace MiniMap
 			//Brush brush = new HatchBrush(HatchStyle.Percent80, Color.White);
 			//Pen pen = new Pen(Color.Peru, 2f);
 
-			Brush brush = new HatchBrush((HatchStyle)draw.style.Param, Color.FromArgb(draw.style.Color | (255 << 24)), Color.White);
+			Brush brush = new HatchBrush((HatchStyle)draw.style.Kind, Color.FromArgb(draw.style.Color | (255 << 24)), Color.White);
 			Pen pen = new Pen(Color.FromArgb(draw.style.Color | (255 << 24)), 2f);
-			
+			pen.Width = draw.style.Size;
+
 			GraphicsPath path = new GraphicsPath();
 			Polygon pgon = (Polygon)draw.geometry;
 
@@ -466,6 +611,15 @@ namespace MiniMap
 		public int DrawMultiPolygon(MultiPolygon mpgon, int color = -1, bool markVerts = false)
 		{
 			DrawingParams draw = new DrawingParams { geometry = mpgon, type = GeometryType.MultiPolygon, style= new Style { Color = color, Size = 0 }, drawVerts = markVerts, text = null };
+			DrawMultiPolygon(draw);
+
+			_drawedItems.Add(_drawedCount, draw);
+			return _drawedCount++;
+		}
+
+		public int DrawMultiPolygon(MultiPolygon mpgon, Style style, bool markVerts = false)
+		{
+			DrawingParams draw = new DrawingParams { geometry = mpgon, type = GeometryType.MultiPolygon, style = style, drawVerts = markVerts, text = null };
 			DrawMultiPolygon(draw);
 
 			_drawedItems.Add(_drawedCount, draw);

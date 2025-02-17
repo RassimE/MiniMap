@@ -1,17 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using MiniMap;
 using MiniMap.Geometry;
 
 namespace DataFrame
 {
-	public struct Style
-	{
-		public int Color;
-		public int Size;
-		public int Kind;
-	}
-
 	public class MapData : IEnumerable<GeometryBase>, IEnumerable
 	{
 		Envelope _extend;
@@ -141,7 +135,7 @@ namespace DataFrame
 				else
 				{
 					style.Color = -1;
-					style.Size = 0;
+					style.Size = 1;
 					style.Kind = 0;
 				}
 
@@ -152,45 +146,58 @@ namespace DataFrame
 						{
 							style.Color = MapEngine.RGB(192, 128, 0);
 							style.Size = 1;
-							style.Kind = 0;
+							style.Kind = 7;  //HatchStyle.Percent10;
 						}
 
-						_engine.DrawPolygon((Polygon)item, style.Color, _drawTiks);
+						_engine.DrawPolygon((Polygon)item, style, _drawTiks);
 						break;
 
 					case GeometryType.MultiPolygon:
 						if (item.Tag == null)
+						{
 							style.Color = MapEngine.RGB(192, 128, 0);
-						_engine.DrawMultiPolygon((MultiPolygon)item, style.Color, _drawTiks);
+							style.Size = 1;
+							style.Kind = 7;  //HatchStyle.Percent10;
+						}
+
+						_engine.DrawMultiPolygon((MultiPolygon)item, style, _drawTiks);
 						break;
 
 					case GeometryType.LineString:
 						if (item.Tag == null)
 							style.Color = MapEngine.RGB(192, 128, 255);
-						_engine.DrawLineString((LineString)item, 1, style.Color, _drawTiks);
+						_engine.DrawLineString((LineString)item, style, _drawTiks);
 						break;
 
 					case GeometryType.MultiLineString:
 						if (item.Tag == null)
 							style.Color = MapEngine.RGB(192, 128, 255);
-						_engine.DrawMultiLineString((MultiLineString)item, 1, style.Color, _drawTiks);
+						_engine.DrawMultiLineString((MultiLineString)item, style, _drawTiks);
 						break;
 
 					case GeometryType.Point:
-						if (item.Tag == null)
-							style.Color = MapEngine.RGB(192, 192, 255);
 
 						Point pt = (Point)item;
 						if (string.IsNullOrEmpty(pt.Name))
 							_engine.DrawPoint(pt, iColor: MapEngine.RGB(192, 128, 255));
 						else
-							_engine.DrawPointWithText(pt, pt.Name, iColor: style.Color);
+						{
+							if (item.Tag == null)
+							{
+								style.Color = MapEngine.RGB(192, 192, 255);
+								style.Size = 10;
+							}
+							_engine.DrawPointWithText(pt, pt.Name, style);
+						}
 						break;
 
 					case GeometryType.MultiPoint:
 						if (item.Tag == null)
+						{
 							style.Color = MapEngine.RGB(92, 192, 92);
-						_engine.DrawMultiPoint((MultiPoint)item, 6, style.Color);
+							style.Size = 6;
+						}
+						_engine.DrawMultiPoint((MultiPoint)item, style);
 						break;
 				}
 			}
