@@ -87,12 +87,23 @@ namespace MiniMap
 		#endregion
 
 		#region Routines
+		static Random rnd = new Random(DateTime.Now.Millisecond);
+
+		public static int RandomColor()
+		{
+			int r = rnd.Next(256);
+			int g = rnd.Next(256);
+			int b = rnd.Next(256);
+
+			return (b << 16) | (g << 8) | r;
+		}
+
 		public static int RGB(int r, int g, int b)
 		{
 			r &= 0xff;
 			g &= 0xff;
 			b &= 0xff;
-			return (((b << 0x10) | (g << 8)) | r);
+			return (b << 0x10) | (g << 8) | r;
 		}
 
 		public static int InvRGB(Color color)
@@ -100,7 +111,7 @@ namespace MiniMap
 			int r = 0xff - (color.R & 0xff);
 			int g = 0xff - (color.G & 0xff);
 			int b = 0xff - (color.B & 0xff);
-			return (((b << 0x10) | (g << 8)) | r);
+			return (b << 0x10) | (g << 8) | r;
 		}
 
 		public static float RadToDeg(float x)
@@ -516,6 +527,8 @@ namespace MiniMap
 
 		public int DrawPolygon(Polygon pgon, int color = -1, bool markVerts = false)
 		{
+			if (pgon.ExteriorRing.Count == 0)
+				return -1;
 			DrawingParams draw = new DrawingParams
 			{
 				geometry = pgon,
