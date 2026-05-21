@@ -28,43 +28,33 @@ namespace DataFrame
 			return new Point(newX, newY);
 		}
 
-		private static double nearDistance(Point Pnt0, Point Pnt1)
+		private static double GeoDistance(Point Pt0, Point Pt1)
 		{
-			#region constants
 			const double DegToRadValue = Math.PI / 180.0;
-			const double AWG = 6378137.0;
-			const double FWG = 1.0 / 298.257223563;
-			const double E2WG = FWG * (2.0 - FWG);
-			#endregion
+			const double r00 = 6356824.05;
+			const double r45 = 6374541.883;
+			const double r90 = 6399592.574;
 
-			double fX0 = DegToRadValue * Pnt0.X;
-			double fX1 = DegToRadValue * Pnt1.X;
+			const double d2 = 4.0 * (r90 - 2.0 * r45 + r00);
+			const double d1 = r90 - r00;
 
-			double fY0 = DegToRadValue * Pnt0.Y;
-			double fY1 = DegToRadValue * Pnt1.Y;
+			const double InvPI = 1.0 / Math.PI;
 
-			double TanU1 = (1.0 - FWG) * Math.Tan(fY0);
-			double TanU2 = (1.0 - FWG) * Math.Tan(fY1);
+			double lon1r = Pt0.X * DegToRadValue;
+			double lat1r = Pt0.Y * DegToRadValue;
 
-			double fTmp = Math.Atan(TanU1);
-			double CosU1 = Math.Cos(fTmp);
-			double SinU1 = Math.Sin(fTmp);
+			double lon2r = Pt1.X * DegToRadValue;
+			double lat2r = Pt1.Y * DegToRadValue;
 
-			fTmp = Math.Atan(TanU2);
-			double CosU2 = Math.Cos(fTmp);
-			double SinU2 = Math.Sin(fTmp);
+			double CosL = Math.Sin(lat1r) * Math.Sin(lat2r) + Math.Cos(lat1r) * Math.Cos(lat2r) * Math.Cos(lon2r - lon1r);
+			//CosL = CosL > 1.0 ? 1.0 : CosL;
+			//CosL = CosL < -1.0 ? -1.0 : CosL;
 
-			fTmp = Math.Sin(0.5 * (fY0 + fY1));
-			double Rm = AWG * (1.0 - E2WG) / (1.0 - E2WG * fTmp * fTmp);
+			double x = InvPI * Math.Abs(lat1r + lat2r);
+			double dx = x - 0.5;
+			double Rm = r45 + dx * (d1 + 0.5 * dx * d2);
 
-			fTmp = fX1 - fX0;
-			//double SinL = Math.Sin(fTmp);
-			double CosL = Math.Cos(fTmp);
-
-			fTmp = SinU1 * SinU2 + CosU1 * CosU2 * CosL;
-			fTmp = fTmp > 1.0 ? 1.0 : fTmp;
-			fTmp = fTmp < -1.0 ? -1.0 : fTmp;
-			return Math.Acos(fTmp) * Rm;
+			return Rm * Math.Acos(CosL);
 		}
 
 		public static void CalculateRatio(Envelope extend, out double kx, out double ky)
@@ -76,8 +66,8 @@ namespace DataFrame
 			Point ptT = new Point(ptMdl.X, ptMdl.Y - 0.01);
 			Point ptB = new Point(ptMdl.X, ptMdl.Y + 0.01);
 
-			double dx = nearDistance(ptL, ptR);
-			double dy = nearDistance(ptT, ptB);
+			double dx = GeoDistance(ptL, ptR);
+			double dy = GeoDistance(ptT, ptB);
 
 			if (dx < dy)
 			{

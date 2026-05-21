@@ -561,6 +561,10 @@ namespace MiniMap
 
 		private void DrawPolygon(DrawingParams draw)
 		{
+			Polygon pgon = (Polygon)draw.geometry;
+			if (pgon.ExteriorRing.Count < 2)
+				return;
+
 			if (_gr == null)
 				_gr = Graphics.FromImage(_bmp);
 
@@ -572,7 +576,6 @@ namespace MiniMap
 			pen.Width = draw.style.Size;
 
 			GraphicsPath path = new GraphicsPath();
-			Polygon pgon = (Polygon)draw.geometry;
 
 			for (int i = 0; i <= pgon.InteriorRingList.Count; i++)
 			{

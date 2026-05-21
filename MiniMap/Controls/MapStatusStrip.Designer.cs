@@ -95,7 +95,8 @@
 			// 
 			this.labelMeasure.AutoSize = false;
 			this.labelMeasure.Name = "labelMeasure";
-			this.labelMeasure.Size = new System.Drawing.Size(120, 17);
+			this.labelMeasure.Size = new System.Drawing.Size(250, 17);
+			this.labelMeasure.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// MapStatusStrip
 			// 

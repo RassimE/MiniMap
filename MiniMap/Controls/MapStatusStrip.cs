@@ -15,37 +15,6 @@ namespace MiniMap
 		}
 		#endregion
 
-		#region routines
-		private static double GeoDistance(Point Pnt0, Point Pnt1)
-		{
-			const double DegToRadValue = Math.PI / 180.0;
-			const double r00 = 6356824.05;
-			const double r45 = 6374541.883;
-			const double r90 = 6399592.574;
-
-			const double d2 = 4.0 * (r90 - 2.0 * r45 + r00);
-			const double d1 = r90 - r00;
-
-			const double InvPI = 1.0 / Math.PI;
-
-			double lon1r = Pnt0.X * DegToRadValue;
-			double lat1r = Pnt0.Y * DegToRadValue;
-
-			double lon2r = Pnt1.X * DegToRadValue;
-			double lat2r = Pnt1.Y * DegToRadValue;
-
-			double CosL = Math.Sin(lat1r) * Math.Sin(lat2r) + Math.Cos(lat1r) * Math.Cos(lat2r) * Math.Cos(lon2r - lon1r);
-			//CosL = CosL > 1.0 ? 1.0 : CosL;
-			//CosL = CosL < -1.0 ? -1.0 : CosL;
-
-			double x = InvPI * Math.Abs(lat1r + lat2r);
-			double dx = x - 0.5;
-			double Rm = r45 + dx * (d1 + 0.5 * dx * d2);
-
-			return Rm * Math.Acos(CosL);
-		}
-		#endregion
-
 		#region mouse events
 		private void mapControl_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -64,15 +33,16 @@ namespace MiniMap
 		private void mapControl_MeasureEvent(object sender, MapEventArgs args)
 		{
 			MapControl control = (MapControl)sender;
-			string units = "m";
-			double dist = args.Distance;
+			string distunits = "m", dirunits = "°", dirname = "Direction";
+			double dist = args.Distance, dir = args.Direction;
 
 			if (control.Units == MapUnits.Degrees)
-				dist = GeoDistance(args.FromPoint, args.ToPoint);
+				//Inverse(args.FromPoint, args.ToPoint, out dist, out dir);
+				dirname = "Azimuth";
 			else if (control.Units != MapUnits.Meters)
-				units = "";
+				dirunits = distunits = "";
 
-			labelMeasure.Text = string.Format("Distance = {0:0.00} {1}", dist, units);
+			labelMeasure.Text = string.Format("Distance = {0:0.00} {1}, {2} = {3:0.00}{4}", dist, distunits, dirname, dir, dirunits);
 		}
 		#endregion
 

@@ -1,0 +1,73 @@
+File RailroadPolylines
+Units Meters
+
+MultiPolyline
+Polyline
+Point X = -140, Y = 5300 End Point
+Point X = -110, Y = 5295 End Point
+Point X = -80, Y = 5285 End Point
+End Polyline
+End MultiPolyline
+
+MultiPolyline
+Polyline
+Point X = -80, Y = 5285 End Point
+Point X = -55, Y = 5250 End Point
+Point X = -40, Y = 5205 End Point
+End Polyline
+End MultiPolyline
+
+MultiPolyline
+Polyline
+Point X = -40, Y = 5205 End Point
+Point X = -20, Y = 5180 End Point
+Point X = 20, Y = 5165 End Point
+End Polyline
+End MultiPolyline
+
+MultiPolyline
+Polyline
+Point X = 20, Y = 5165 End Point
+Point X = 60, Y = 5145 End Point
+Point X = 100, Y = 5115 End Point
+End Polyline
+End MultiPolyline
+
+MultiPolyline
+Polyline
+Point X = 100, Y = 5115 End Point
+Point X = 118, Y = 5090 End Point
+Point X = 130, Y = 5060 End Point
+End Polyline
+End MultiPolyline
+
+Multipoint
+Point X = -140, Y = 5300 End Point
+Point X = -110, Y = 5295 End Point
+Point X = -80, Y = 5285 End Point
+End Multipoint
+
+Multipoint
+Point X = -80, Y = 5285 End Point
+Point X = -55, Y = 5250 End Point
+Point X = -40, Y = 5205 End Point
+End Multipoint
+
+Multipoint
+Point X = -40, Y = 5205 End Point
+Point X = -20, Y = 5180 End Point
+Point X = 20, Y = 5165 End Point
+End Multipoint
+
+Multipoint
+Point X = 20, Y = 5165 End Point
+Point X = 60, Y = 5145 End Point
+Point X = 100, Y = 5115 End Point
+End Multipoint
+
+Multipoint
+Point X = 100, Y = 5115 End Point
+Point X = 118, Y = 5090 End Point
+Point X = 130, Y = 5060 End Point
+End Multipoint
+

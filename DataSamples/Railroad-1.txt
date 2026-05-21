@@ -1,0 +1,16 @@
+file RailroadPolylines
+Units meters
+
+polyline
+Point Y:5300, X:-140 end point
+Point Y:5295, X:-110 end point
+Point Y:5285, X: -80 end point
+Point Y:5250, X: -55 end point
+Point Y:5205, X: -40 end point
+Point Y:5180, X: -20 end point
+Point Y:5165, X: 20 end point
+Point Y:5145, X: 60 end point
+Point Y:5115, X: 100 end point
+Point Y:5090, X: 118 end point
+Point Y:5060, X: 130 end point
+end polyline
