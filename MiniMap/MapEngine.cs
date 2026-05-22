@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Point = MiniMap.Geometry.Point;
 
 namespace MiniMap
 {
@@ -118,6 +119,73 @@ namespace MiniMap
 		{
 			return (float)(x * 180.0 / Math.PI);
 		}
+
+		public static float DegToRad(float x)
+		{
+			return (float)(x * Math.PI / 180.0);
+		}
+
+		public static void Inverse(Point Pt0, Point Pt1, out double distance, out double azimuth)
+		{
+			const double AWG = 6378137.0;
+			const double FWG = 1.0 / 298.257223563;
+			const double BWG = AWG * (1.0 - FWG);
+			const double DegToRadValue = Math.PI / 180.0;
+			const double epsilon = 1e-12;
+
+			double u1 = Math.Atan((1 - FWG) * Math.Tan(Pt0.Y * DegToRadValue));
+			double u2 = Math.Atan((1 - FWG) * Math.Tan(Pt1.Y * DegToRadValue));
+			double L = (Pt1.X - Pt0.X) * DegToRadValue;
+
+			double sinU1 = Math.Sin(u1), cosU1 = Math.Cos(u1);
+			double sinU2 = Math.Sin(u2), cosU2 = Math.Cos(u2);
+
+			double lambda = L;
+			double lambdaP;
+			double sinSigma, cosSigma, sigma, sinAlpha, cosSqAlpha, cos2SigmaM;
+			int iterations = 0;
+
+			do
+			{
+				double sinLambda = Math.Sin(lambda), cosLambda = Math.Cos(lambda);
+				sinSigma = Math.Sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda) +
+								   (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda));
+
+				if (sinSigma == 0)
+				{
+					distance = azimuth = 0;
+					return;
+				}
+
+				cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
+				sigma = Math.Atan2(sinSigma, cosSigma);
+				sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
+				cosSqAlpha = 1 - sinAlpha * sinAlpha;
+
+				cos2SigmaM = cosSqAlpha == 0 ? 0 : cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
+
+				double C = FWG / 16 * cosSqAlpha * (4 + FWG * (4 - 3 * cosSqAlpha));
+				lambdaP = lambda;
+				lambda = L + (1 - C) * FWG * sinAlpha *
+						 (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
+
+			} while (Math.Abs(lambda - lambdaP) > epsilon && ++iterations < 200);
+
+			double uSq = cosSqAlpha * (AWG * AWG - BWG * BWG) / (BWG * BWG);
+
+			double A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+			double B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+
+			double deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) -
+								B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+
+			distance = BWG * A * (sigma - deltaSigma);
+			double alpha1 = Math.Atan2(cosU2 * Math.Sin(lambda), cosU1 * sinU2 - sinU1 * cosU2 * Math.Cos(lambda));
+
+			azimuth = (alpha1 / DegToRadValue + 360.0) % 360.0;
+			return;
+		}
+
 		#endregion
 
 		#region draw
